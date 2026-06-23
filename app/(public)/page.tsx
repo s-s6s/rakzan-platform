@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useLocale } from "@/lib/LocaleContext";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { Shield, Users, Handshake, Building2, ArrowLeft, MessageCircle } from "lucide-react";
-import type { Property } from "@/types/property";
 
-const sampleProperties: Property[] = [
+
+const sampleProperties: any[] = [
   {
     id: "1", created_at: "", updated_at: "",
     title: "فلة فاخرة في حي النرجس", description: "فلة راقية بموقع مميز",

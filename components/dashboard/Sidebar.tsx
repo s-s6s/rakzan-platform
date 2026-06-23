@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale } from '@/lib/LocaleContext';
 import { cn } from '@/lib/utils/cn';
-import { LayoutDashboard, Building2, Users, MessageSquare, FileText, CreditCard, Calendar, BarChart3, Bell, Settings, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { LayoutDashboard, Building2, Users, MessageSquare, FileText, CreditCard, Calendar, BarChart3, Bell, Settings, ChevronLeft, ChevronRight, LogOut, Activity, Mail, DollarSign } from 'lucide-react';
 import { useState } from 'react';
 const navItems = [
   { key: 'dashboard.overview', href: '/dashboard', icon: LayoutDashboard },
@@ -15,6 +15,8 @@ const navItems = [
   { key: 'dashboard.appointments', href: '/dashboard/appointments', icon: Calendar },
   { key: 'dashboard.reports', href: '/dashboard/reports', icon: BarChart3 },
   { key: 'dashboard.notifications', href: '/dashboard/notifications', icon: Bell },
+  { key: 'سجل النشاطات', href: '/dashboard/activity', icon: Activity },
+  { key: 'قوالب الإشعارات', href: '/dashboard/email-templates', icon: Mail },
   { key: 'dashboard.settings', href: '/dashboard/settings', icon: Settings },
 ];
 export function Sidebar() {

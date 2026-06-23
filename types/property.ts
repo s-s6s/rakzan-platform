@@ -5,18 +5,23 @@ export type UserRole = "super_admin" | "manager" | "agent" | "viewer" | "client"
 
 export interface Property {
   id: string; created_at: string; updated_at: string;
-  title_ar: string; title_en: string | null; description_ar: string; description_en: string | null;
-  slug: string; status: PropertyStatus; purpose: PropertyPurpose; type: PropertyType;
+  title: string; description: string; slug: string;
+  status: PropertyStatus; purpose: PropertyPurpose; type: PropertyType;
   price: number; currency: string; area: number; area_unit: string;
   bedrooms: number | null; bathrooms: number | null; year_built: number | null;
   floors: number | null; deed_number: string | null; street_width: number | null;
   latitude: number | null; longitude: number | null;
-  address_ar: string | null; address_en: string | null;
-  city_ar: string; city_en: string | null; district_ar: string | null; district_en: string | null;
-  images: string[]; featured_image: string | null; features: string[];
+  address: string | null; city: string; district: string | null;
+  featured_image: string | null;
+  images_bathroom: string[];
+  images_bedroom: string[];
+  images_living: string[];
+  images_kitchen: string[];
+  images_facilities: string[];
+  images_exterior: string[];
+  images_other: string[];
+  features: string[];
   owner_id: string | null; is_featured: boolean; views_count: number;
-  meta_title_ar: string | null; meta_title_en: string | null;
-  meta_description_ar: string | null; meta_description_en: string | null;
 }
 
 export interface Client {
@@ -59,7 +64,7 @@ export interface Appointment {
 
 export interface Notification {
   id: string; created_at: string; user_id: string;
-  title_ar: string; title_en: string | null; body_ar: string; body_en: string | null;
+  title: string; body: string;
   type: "inquiry" | "contract" | "payment" | "appointment" | "system";
   is_read: boolean; link: string | null;
 }

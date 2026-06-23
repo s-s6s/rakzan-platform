@@ -1,13 +1,11 @@
 'use client';
 import { useState, useCallback } from 'react';
-import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
 import { Upload, X, Loader2 } from 'lucide-react';
 
-interface Props { images: string[]; onChange: (images: string[]) => void; max?: number; }
+interface Props { images: string[]; onChange: (images: string[]) => void; max?: number; label?: string; }
 
-export function ImageUpload({ images, onChange, max = 10 }: Props) {
-  const { locale } = useLocale();
+export function ImageUpload({ images, onChange, max = 10, label }: Props) {
   const [uploading, setUploading] = useState(false);
 
   const upload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,12 +32,13 @@ export function ImageUpload({ images, onChange, max = 10 }: Props) {
   const remove = (index: number) => onChange(images.filter((_, i) => i !== index));
 
   return (
-    <div className='space-y-3'>
+    <div className='space-y-2'>
+      {label && <p className='text-xs font-medium text-muted'>{label}</p>}
       <div className='flex flex-wrap gap-2'>
         {images.map((url, i) => (
           <div key={i} className='relative h-20 w-20 overflow-hidden rounded-lg border'>
             <img src={url} alt='' className='h-full w-full object-cover' />
-            <button type='button' onClick={() => remove(i)} className='absolute right-0.5 top-0.5 rounded-full bg-black/50 p-0.5 text-white hover:bg-black/70'><X className='h-3 w-3' /></button>
+            <button type='button' onClick={() => remove(i)} className='absolute left-0.5 top-0.5 rounded-full bg-black/50 p-0.5 text-white hover:bg-black/70'><X className='h-3 w-3' /></button>
           </div>
         ))}
         {images.length < max && (
@@ -49,7 +48,6 @@ export function ImageUpload({ images, onChange, max = 10 }: Props) {
           </label>
         )}
       </div>
-      <p className='text-xs text-muted'>{locale === 'ar' ? `الحد الأقصى ${max} صور` : `Max ${max} images`}</p>
     </div>
   );
 }

@@ -1,10 +1,8 @@
 -- Rakzan Al-Ufuq Real Estate Platform - Database Schema
 -- Run this in Supabase SQL Editor
 
--- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ==================== ENUMS ====================
 CREATE TYPE property_status AS ENUM ('available', 'sold', 'rented', 'under_contract', 'off_market');
 CREATE TYPE property_purpose AS ENUM ('sale', 'rent');
 CREATE TYPE property_type AS ENUM ('apartment', 'villa', 'land', 'office', 'commercial', 'warehouse', 'building');
@@ -18,8 +16,9 @@ CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'overdue', 'cancelled');
 CREATE TYPE payment_method AS ENUM ('cash', 'bank_transfer', 'check', 'credit_card', 'other');
 CREATE TYPE appointment_status AS ENUM ('scheduled', 'completed', 'cancelled', 'rescheduled');
 CREATE TYPE notification_type AS ENUM ('inquiry', 'contract', 'payment', 'appointment', 'system');
+CREATE TYPE image_category AS ENUM ('bathroom', 'bedroom', 'living', 'kitchen', 'facilities', 'exterior', 'other');
+CREATE TYPE setting_key AS ENUM ('company_name', 'company_phone', 'company_email', 'company_address', 'whatsapp_number', 'commission_rate', 'currency', 'date_format', 'theme_color');
 
--- ==================== TABLES ====================
 CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
@@ -34,10 +33,8 @@ CREATE TABLE properties (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  title_ar TEXT NOT NULL,
-  title_en TEXT,
-  description_ar TEXT NOT NULL,
-  description_en TEXT,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
   slug TEXT NOT NULL UNIQUE,
   status property_status NOT NULL DEFAULT 'available',
   purpose property_purpose NOT NULL,
@@ -45,7 +42,7 @@ CREATE TABLE properties (
   price NUMERIC(12, 2) NOT NULL,
   currency TEXT NOT NULL DEFAULT 'SAR',
   area NUMERIC(10, 2) NOT NULL,
-  area_unit TEXT NOT NULL DEFAULT 'sqm',
+  area_unit TEXT NOT NULL DEFAULT 'م²',
   bedrooms INT,
   bathrooms INT,
   year_built INT,
@@ -54,22 +51,21 @@ CREATE TABLE properties (
   street_width NUMERIC(5, 2),
   latitude NUMERIC(10, 7),
   longitude NUMERIC(10, 7),
-  address_ar TEXT,
-  address_en TEXT,
-  city_ar TEXT NOT NULL,
-  city_en TEXT,
-  district_ar TEXT,
-  district_en TEXT,
-  images TEXT[] DEFAULT '{}',
+  address TEXT,
+  city TEXT NOT NULL,
+  district TEXT,
   featured_image TEXT,
+  images_bathroom TEXT[] DEFAULT '{}',
+  images_bedroom TEXT[] DEFAULT '{}',
+  images_living TEXT[] DEFAULT '{}',
+  images_kitchen TEXT[] DEFAULT '{}',
+  images_facilities TEXT[] DEFAULT '{}',
+  images_exterior TEXT[] DEFAULT '{}',
+  images_other TEXT[] DEFAULT '{}',
   features TEXT[] DEFAULT '{}',
   owner_id UUID REFERENCES profiles(id),
   is_featured BOOLEAN NOT NULL DEFAULT FALSE,
-  views_count INT NOT NULL DEFAULT 0,
-  meta_title_ar TEXT,
-  meta_title_en TEXT,
-  meta_description_ar TEXT,
-  meta_description_en TEXT
+  views_count INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE clients (
@@ -143,10 +139,8 @@ CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   user_id UUID NOT NULL REFERENCES profiles(id),
-  title_ar TEXT NOT NULL,
-  title_en TEXT,
-  body_ar TEXT NOT NULL,
-  body_en TEXT,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
   type notification_type NOT NULL DEFAULT 'system',
   is_read BOOLEAN NOT NULL DEFAULT FALSE,
   link TEXT
@@ -160,11 +154,30 @@ CREATE TABLE favorites (
   UNIQUE(user_id, property_id)
 );
 
--- ==================== INDEXES ====================
+CREATE TABLE settings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  key setting_key NOT NULL UNIQUE,
+  value TEXT NOT NULL DEFAULT '',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Default settings
+INSERT INTO settings (key, value) VALUES
+  ('company_name', 'ركزان الأفق العقارية'),
+  ('company_phone', '+966 55 123 4567'),
+  ('company_email', 'info@rakzan.com'),
+  ('company_address', 'الرياض، المملكة العربية السعودية'),
+  ('whatsapp_number', '966500000000'),
+  ('commission_rate', '2.5'),
+  ('currency', 'SAR'),
+  ('date_format', 'YYYY-MM-DD'),
+  ('theme_color', '#1a2b72')
+ON CONFLICT (key) DO NOTHING;
+
 CREATE INDEX idx_properties_status ON properties(status);
 CREATE INDEX idx_properties_purpose ON properties(purpose);
 CREATE INDEX idx_properties_type ON properties(type);
-CREATE INDEX idx_properties_city_ar ON properties(city_ar);
+CREATE INDEX idx_properties_city ON properties(city);
 CREATE INDEX idx_properties_slug ON properties(slug);
 CREATE INDEX idx_properties_featured ON properties(is_featured) WHERE is_featured = TRUE;
 CREATE INDEX idx_inquiries_status ON inquiries(status);
@@ -174,8 +187,6 @@ CREATE INDEX idx_payments_due_date ON payments(due_date);
 CREATE INDEX idx_notifications_user_read ON notifications(user_id, is_read);
 CREATE INDEX idx_favorites_user ON favorites(user_id);
 
--- ==================== ROW LEVEL SECURITY ====================
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
@@ -185,39 +196,22 @@ ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 
--- Public read access for properties
 CREATE POLICY "Public can view properties" ON properties FOR SELECT USING (TRUE);
-
--- Authenticated users full access
 CREATE POLICY "Authenticated users can insert properties" ON properties FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Authenticated users can update properties" ON properties FOR UPDATE USING (auth.role() = 'authenticated');
 CREATE POLICY "Authenticated users can delete properties" ON properties FOR DELETE USING (auth.role() = 'authenticated');
-
--- Clients: authenticated users full access
 CREATE POLICY "Authenticated full access to clients" ON clients FOR ALL USING (auth.role() = 'authenticated');
-
--- Inquiries: public insert, authenticated full read/update
 CREATE POLICY "Public can create inquiries" ON inquiries FOR INSERT WITH CHECK (TRUE);
 CREATE POLICY "Authenticated can view inquiries" ON inquiries FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Authenticated can update inquiries" ON inquiries FOR UPDATE USING (auth.role() = 'authenticated');
-
--- Contracts, Payments, Appointments: authenticated only
 CREATE POLICY "Authenticated full access to contracts" ON contracts FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Authenticated full access to payments" ON payments FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Authenticated full access to appointments" ON appointments FOR ALL USING (auth.role() = 'authenticated');
-
--- Notifications: users see their own
 CREATE POLICY "Users can view own notifications" ON notifications FOR SELECT USING (auth.uid() = user_id);
-
--- Favorites: users manage their own
 CREATE POLICY "Users manage own favorites" ON favorites FOR ALL USING (auth.uid() = user_id);
-
--- Profiles: users see all, update own
 CREATE POLICY "Users can view all profiles" ON profiles FOR SELECT USING (TRUE);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
--- ==================== TRIGGERS ====================
--- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -232,7 +226,6 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
 
--- Auto-update updated_at
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

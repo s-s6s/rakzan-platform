@@ -12,9 +12,9 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
     if (status) query = query.eq('status', status);
     const city = searchParams.get('city');
-    if (city) query = query.ilike('city_ar', `%${city}%`);
+    if (city) query = query.ilike('city', `%${city}%`);
     const search = searchParams.get('search');
-    if (search) query = query.or(`title_ar.ilike.%${search}%,title_en.ilike.%${search}%`);
+    if (search) query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const from = (page - 1) * limit;
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient();
     const body = await request.json();
+    if (!body.slug) body.slug = body.title.replace(/\s+/g, '-').replace(/[^\w-]/g, '').toLowerCase();
     const { data, error } = await supabase.from('properties').insert(body).select().single();
     if (error) throw error;
     return NextResponse.json({ data }, { status: 201 });

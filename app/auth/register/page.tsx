@@ -18,15 +18,20 @@ function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: name, phone: '' } },
-    });
-    if (error) { toast.error(error.message); setLoading(false); return; }
-    toast.success(t('auth.register_success') || 'تم إنشاء الحساب! تحقق من بريدك الإلكتروني');
-    router.push('/auth/login');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name, phone: '' } },
+      });
+      if (error) { toast.error(error.message); setLoading(false); return; }
+      toast.success(t('auth.register_success') || 'تم إنشاء الحساب! تحقق من بريدك الإلكتروني');
+      router.push('/auth/login');
+    } catch (err: any) {
+      toast.error(err?.message || 'حدث خطأ غير متوقع');
+      setLoading(false);
+    }
   };
 
   return (

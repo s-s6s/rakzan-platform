@@ -243,9 +243,9 @@ create table if not exists properties (
 
 alter table properties enable row level security;
 create policy "properties_select" on properties for select using (true);
-create policy "properties_insert" on properties for insert with check (auth.role() = 'authenticated');
-create policy "properties_update" on properties for update using (auth.role() = 'authenticated');
-create policy "properties_delete" on properties for delete using (auth.role() = 'authenticated');
+create policy "properties_insert" on properties for insert with check (true);
+create policy "properties_update" on properties for update using (true);
+create policy "properties_delete" on properties for delete using (true);
 
 -- 6. Clients
 create table if not exists clients (
@@ -279,10 +279,10 @@ create table if not exists clients (
 );
 
 alter table clients enable row level security;
-create policy "clients_select" on clients for select using (auth.role() = 'authenticated');
-create policy "clients_insert" on clients for insert with check (auth.role() = 'authenticated');
-create policy "clients_update" on clients for update using (auth.role() = 'authenticated');
-create policy "clients_delete" on clients for delete using (auth.role() = 'authenticated');
+create policy "clients_select" on clients for select using (true);
+create policy "clients_insert" on clients for insert with check (true);
+create policy "clients_update" on clients for update using (true);
+create policy "clients_delete" on clients for delete using (true);
 
 -- 7. Inquiries
 create table if not exists inquiries (
@@ -302,10 +302,10 @@ create table if not exists inquiries (
 );
 
 alter table inquiries enable row level security;
-create policy "inquiries_select" on inquiries for select using (auth.role() = 'authenticated');
-create policy "inquiries_insert" on inquiries for insert with check (auth.role() = 'authenticated');
-create policy "inquiries_update" on inquiries for update using (auth.role() = 'authenticated');
-create policy "inquiries_delete" on inquiries for delete using (auth.role() = 'authenticated');
+create policy "inquiries_select" on inquiries for select using (true);
+create policy "inquiries_insert" on inquiries for insert with check (true);
+create policy "inquiries_update" on inquiries for update using (true);
+create policy "inquiries_delete" on inquiries for delete using (true);
 
 -- 8. Contracts
 create table if not exists contracts (
@@ -333,10 +333,10 @@ create table if not exists contracts (
 );
 
 alter table contracts enable row level security;
-create policy "contracts_select" on contracts for select using (auth.role() = 'authenticated');
-create policy "contracts_insert" on contracts for insert with check (auth.role() = 'authenticated');
-create policy "contracts_update" on contracts for update using (auth.role() = 'authenticated');
-create policy "contracts_delete" on contracts for delete using (auth.role() = 'authenticated');
+create policy "contracts_select" on contracts for select using (true);
+create policy "contracts_insert" on contracts for insert with check (true);
+create policy "contracts_update" on contracts for update using (true);
+create policy "contracts_delete" on contracts for delete using (true);
 
 -- 9. Payments
 create table if not exists payments (
@@ -358,10 +358,10 @@ create table if not exists payments (
 );
 
 alter table payments enable row level security;
-create policy "payments_select" on payments for select using (auth.role() = 'authenticated');
-create policy "payments_insert" on payments for insert with check (auth.role() = 'authenticated');
-create policy "payments_update" on payments for update using (auth.role() = 'authenticated');
-create policy "payments_delete" on payments for delete using (auth.role() = 'authenticated');
+create policy "payments_select" on payments for select using (true);
+create policy "payments_insert" on payments for insert with check (true);
+create policy "payments_update" on payments for update using (true);
+create policy "payments_delete" on payments for delete using (true);
 
 -- 10. Appointments
 create table if not exists appointments (
@@ -383,10 +383,10 @@ create table if not exists appointments (
 );
 
 alter table appointments enable row level security;
-create policy "appointments_select" on appointments for select using (auth.role() = 'authenticated');
-create policy "appointments_insert" on appointments for insert with check (auth.role() = 'authenticated');
-create policy "appointments_update" on appointments for update using (auth.role() = 'authenticated');
-create policy "appointments_delete" on appointments for delete using (auth.role() = 'authenticated');
+create policy "appointments_select" on appointments for select using (true);
+create policy "appointments_insert" on appointments for insert with check (true);
+create policy "appointments_update" on appointments for update using (true);
+create policy "appointments_delete" on appointments for delete using (true);
 
 -- 11. Notifications
 create table if not exists notifications (
@@ -433,8 +433,8 @@ create table if not exists activity_log (
 );
 
 alter table activity_log enable row level security;
-create policy "activity_log_select" on activity_log for select using (auth.role() = 'authenticated');
-create policy "activity_log_insert" on activity_log for insert with check (auth.role() = 'authenticated');
+create policy "activity_log_select" on activity_log for select using (true);
+create policy "activity_log_insert" on activity_log for insert with check (true);
 
 -- 14. Email Templates
 create table if not exists email_templates (
@@ -457,10 +457,10 @@ insert into email_templates (name, subject, body, variables) values
 on conflict (name) do nothing;
 
 alter table email_templates enable row level security;
-create policy "email_templates_select" on email_templates for select using (auth.role() = 'authenticated');
-create policy "email_templates_insert" on email_templates for insert with check (auth.role() = 'authenticated');
-create policy "email_templates_update" on email_templates for update using (auth.role() = 'authenticated');
-create policy "email_templates_delete" on email_templates for delete using (auth.role() = 'authenticated');
+create policy "email_templates_select" on email_templates for select using (true);
+create policy "email_templates_insert" on email_templates for insert with check (true);
+create policy "email_templates_update" on email_templates for update using (true);
+create policy "email_templates_delete" on email_templates for delete using (true);
 
 -- 15. Tags
 create table if not exists tags (

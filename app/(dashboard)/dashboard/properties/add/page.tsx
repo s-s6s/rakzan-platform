@@ -216,7 +216,7 @@ export default function AddPropertyPage() {
                 <div><label className={labelCls}>الحي (تحديد أكثر)</label><input value={form.neighborhood || ''} onChange={e => set('neighborhood', e.target.value)} className={inputCls} placeholder='الفرعية' /></div>
               </div>
               <div><label className={labelCls}>العنوان</label><input value={form.address || ''} onChange={e => set('address', e.target.value)} className={inputCls} placeholder='العنوان الكامل' /></div>
-              <div><label className={labelCls}>اختر الموقع على الخريطة (بدون إحداثيات)</label><GoogleMapInput latitude={form.latitude} longitude={form.longitude} onChange={(lat, lng) => { set('latitude', lat); set('longitude', lng); }} onAddressChange={addr => set('address', addr)} height='350px' /></div>
+              <div><label className={labelCls}>اختر الموقع على الخريطة</label><GoogleMapInput latitude={form.latitude} longitude={form.longitude} city={form.city} onChange={(lat, lng) => { set('latitude', lat); set('longitude', lng); }} onAddressChange={addr => set('address', addr)} height='350px' /></div>
 
               <div>
                 <label className={labelCls}>أماكن قريبة</label>

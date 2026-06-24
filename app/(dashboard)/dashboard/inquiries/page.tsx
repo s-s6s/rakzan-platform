@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2, Mail, CheckCircle, XCircle, Phone, Trash2 } from 'lucide-react';
+import { statusLabel } from '@/lib/utils/format';
 import { toast } from 'sonner';
 import type { Inquiry } from '@/types/property';
 
@@ -62,7 +63,7 @@ export default function InquiriesPage() {
                 <div className='flex-1 min-w-0'>
                   <div className='flex items-center gap-2 flex-wrap'>
                     <h3 className='font-medium text-sm'>{i.name}</h3>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[i.status] || ''}`}>{i.status}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[i.status] || ''}`}>{statusLabel(i.status, 'inquiry')}</span>
                   </div>
                   <div className='mt-1 flex items-center gap-3 text-xs text-muted flex-wrap'>
                     <span className='flex items-center gap-1'><Phone className='h-3 w-3' />{i.phone}</span>

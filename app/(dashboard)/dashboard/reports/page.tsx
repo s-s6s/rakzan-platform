@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice, propertyTypeLabel, propertyPurposeLabel, statusLabel } from '@/lib/utils/format';
 import { Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -45,13 +45,9 @@ export default function ReportsPage() {
           if (p.city) cityMap[p.city] = (cityMap[p.city] || 0) + 1;
         });
 
-        const typeLabels: Record<string, string> = { apartment: 'شقة', villa: 'فيلا', land: 'أرض', office: 'مكتب', commercial: 'تجاري', warehouse: 'مستودع', building: 'مبنى' };
-        const purposeLabels: Record<string, string> = { sale: 'بيع', rent: 'إيجار' };
-        const statusLabels: Record<string, string> = { available: 'متاح', sold: 'مباع', rented: 'مؤجر', under_contract: 'تحت العقد', off_market: 'غير متاح' };
-
-        setPropertyTypes(Object.entries(typeMap).map(([k, v]) => ({ name: k, value: v, label: typeLabels[k] || k })));
-        setPropertyPurposes(Object.entries(purposeMap).map(([k, v]) => ({ name: k, value: v, label: purposeLabels[k] || k })));
-        setPropertyStatuses(Object.entries(statusMap).map(([k, v]) => ({ name: k, value: v, label: statusLabels[k] || k })));
+        setPropertyTypes(Object.entries(typeMap).map(([k, v]) => ({ name: k, value: v, label: propertyTypeLabel(k) })));
+        setPropertyPurposes(Object.entries(purposeMap).map(([k, v]) => ({ name: k, value: v, label: propertyPurposeLabel(k) })));
+        setPropertyStatuses(Object.entries(statusMap).map(([k, v]) => ({ name: k, value: v, label: statusLabel(k, 'property') })));
         setTopCities(Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => ({ name: k, value: v, label: k })));
       }
       setLoading(false);

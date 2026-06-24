@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2, Plus, Calendar as CalendarIcon } from 'lucide-react';
+import { statusLabel } from '@/lib/utils/format';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import type { Appointment } from '@/types/property';
@@ -71,7 +72,7 @@ export default function AppointmentsPage() {
             <div key={a.id} className='rounded-lg border bg-card p-4'>
               <div className='flex items-center justify-between'>
                 <h3 className='font-medium text-sm'>{a.title}</h3>
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[a.status] || ''}`}>{a.status}</span>
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[a.status] || ''}`}>{statusLabel(a.status, 'appointment')}</span>
               </div>
               <div className='mt-2 flex items-center gap-2 text-xs text-muted'><CalendarIcon className='h-3.5 w-3.5' />{new Date(a.date).toLocaleDateString('ar-SA')} — {a.time}</div>
               {a.notes && <p className='mt-1 text-xs text-muted'>{a.notes}</p>}

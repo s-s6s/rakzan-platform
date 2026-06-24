@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
 import { exportCSV } from '@/lib/utils/export';
+import { clientTypeLabel, statusLabel } from '@/lib/utils/format';
 import { Plus, Search, Download, Loader2, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Client } from '@/types/property';
@@ -105,8 +106,8 @@ export default function ClientsPage() {
                     <>
                       <td className='p-3 font-medium'>{c.name}</td>
                       <td className='p-3 text-muted' dir='ltr'>{c.phone}</td>
-                      <td className='p-3 text-muted'>{c.type}</td>
-                      <td className='p-3'><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[c.status] || ''}`}>{c.status}</span></td>
+                      <td className='p-3 text-muted'>{clientTypeLabel(c.type)}</td>
+                      <td className='p-3'><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[c.status] || ''}`}>{statusLabel(c.status, 'client')}</span></td>
                       <td className='p-3 text-muted whitespace-nowrap'>{new Date(c.created_at).toLocaleDateString('ar-SA')}</td>
                       <td className='p-3'>
                         <button onClick={() => startEdit(c)} className='text-primary hover:text-primary/80 ml-2'><Pencil className='h-3.5 w-3.5 inline' /></button>

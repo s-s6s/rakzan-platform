@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { DM_Sans, Outfit, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { ThemeProvider } from "@/lib/ThemeContext";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600", "700"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-display", weight: ["400", "500", "600", "700", "800"] });
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({ weight: ["400", "500", "600", "700"], subsets: ["arabic", "latin"], variable: "--font-arabic" });
 
 export const metadata: Metadata = {
@@ -13,8 +14,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${inter.variable} ${spaceGrotesk.variable} ${ibmPlexSansArabic.variable}`}>
-      <body className="min-h-screen antialiased">{children}</body>
+    <html lang="ar" dir="rtl" className={`${dmSans.variable} ${outfit.variable} ${ibmPlexSansArabic.variable}`}>
+      <body className="min-h-screen antialiased">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice, statusLabel, paymentMethodLabel } from '@/lib/utils/format';
 import { Loader2, DollarSign, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { Payment } from '@/types/property';
 
@@ -53,8 +53,8 @@ export default function PaymentsPage() {
                   <td className='p-3 font-semibold'>{formatPrice(p.amount)}</td>
                   <td className='p-3 whitespace-nowrap'>{new Date(p.due_date).toLocaleDateString('ar-SA')}</td>
                   <td className='p-3 whitespace-nowrap text-muted'>{p.paid_date ? new Date(p.paid_date).toLocaleDateString('ar-SA') : '-'}</td>
-                  <td className='p-3'><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[p.status] || ''}`}>{p.status}</span></td>
-                  <td className='p-3 text-muted'>{p.method}</td>
+                  <td className='p-3'><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[p.status] || ''}`}>{statusLabel(p.status, 'payment')}</span></td>
+                  <td className='p-3 text-muted'>{paymentMethodLabel(p.method)}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,7 +1,3 @@
--- Migration: Add missing columns & fix RLS policies (no auth required)
--- Run this in Supabase SQL Editor
-
--- 1. Add missing columns to properties
 alter table properties add column if not exists additional_images text[] default '{}';
 alter table properties add column if not exists living_rooms integer;
 alter table properties add column if not exists kitchens integer;
@@ -26,8 +22,6 @@ alter table properties add column if not exists plot_number text;
 alter table properties add column if not exists license_number text;
 alter table properties add column if not exists land_area numeric(10,2);
 alter table properties add column if not exists building_area numeric(10,2);
-
--- 2. Add missing columns to clients
 alter table clients add column if not exists national_id text;
 alter table clients add column if not exists nationality text default 'سعودي';
 alter table clients add column if not exists birth_date date;
@@ -43,39 +37,18 @@ alter table clients add column if not exists tags text[] default '{}';
 alter table clients add column if not exists last_contact timestamptz;
 alter table clients add column if not exists assigned_to uuid;
 alter table clients add column if not exists created_by uuid;
-
--- 3. Drop ALL old RLS policies and recreate with public access
-do $$
-declare
-  rec record;
-begin
-  for rec in select policyname, tablename from pg_policies where schemaname = 'public' loop
-    execute format('drop policy if exists %I on %I', rec.policyname, rec.tablename);
-  end loop;
+do $$ declare rec record; begin for rec in select policyname, tablename from pg_policies where schemaname = 'public' loop execute format('drop policy if exists %I on %I', rec.policyname, rec.tablename); end loop; end $$;
+do $$ begin
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'properties') then execute 'create policy properties_all on properties for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'clients') then execute 'create policy clients_all on clients for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'inquiries') then execute 'create policy inquiries_all on inquiries for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'contracts') then execute 'create policy contracts_all on contracts for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'payments') then execute 'create policy payments_all on payments for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'appointments') then execute 'create policy appointments_all on appointments for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'activity_log') then execute 'create policy activity_log_all on activity_log for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'email_templates') then execute 'create policy email_templates_all on email_templates for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'currencies') then execute 'create policy currencies_all on currencies for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'favorites') then execute 'create policy favorites_all on favorites for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'tags') then execute 'create policy tags_all on tags for all using (true) with check (true)'; end if;
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'notifications') then execute 'create policy notifications_all on notifications for all using (true) with check (true)'; end if;
 end $$;
-
--- 4. Recreate policies with full public access
-alter table properties enable row level security;
-create policy "properties_all" on properties for all using (true) with check (true);
-alter table clients enable row level security;
-create policy "clients_all" on clients for all using (true) with check (true);
-alter table inquiries enable row level security;
-create policy "inquiries_all" on inquiries for all using (true) with check (true);
-alter table contracts enable row level security;
-create policy "contracts_all" on contracts for all using (true) with check (true);
-alter table payments enable row level security;
-create policy "payments_all" on payments for all using (true) with check (true);
-alter table appointments enable row level security;
-create policy "appointments_all" on appointments for all using (true) with check (true);
-alter table activity_log enable row level security;
-create policy "activity_log_all" on activity_log for all using (true) with check (true);
-alter table email_templates enable row level security;
-create policy "email_templates_all" on email_templates for all using (true) with check (true);
-alter table currencies enable row level security;
-create policy "currencies_all" on currencies for all using (true) with check (true);
-alter table favorites enable row level security;
-create policy "favorites_all" on favorites for all using (true) with check (true);
-alter table tags enable row level security;
-create policy "tags_all" on tags for all using (true) with check (true);
-alter table notifications enable row level security;
-create policy "notifications_all" on notifications for all using (true) with check (true);

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocale } from '@/lib/LocaleContext';
 import { createClient } from '@/lib/supabase/client';
 import { exportCSV } from '@/lib/utils/export';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice, statusLabel } from '@/lib/utils/format';
 import { Loader2, Download, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -61,7 +61,7 @@ export default function ContractsPage() {
                   <td className='p-3'>{c.client?.name || '-'}</td>
                   <td className='p-3 text-muted'>{c.property?.title || '-'}</td>
                   <td className='p-3 font-semibold whitespace-nowrap'>{formatPrice(c.amount)}</td>
-                  <td className='p-3'><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[c.status] || ''}`}>{c.status}</span></td>
+                  <td className='p-3'><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[c.status] || ''}`}>{statusLabel(c.status, 'contract')}</span></td>
                   <td className='p-3 text-muted whitespace-nowrap'>{new Date(c.start_date).toLocaleDateString('ar-SA')}</td>
                 </tr>
               ))}

@@ -28,12 +28,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem(THEME_KEY) as ThemeMode | null;
     if (saved && ['light', 'dark', 'gold'].includes(saved)) {
       setThemeState(saved);
-      document.documentElement.setAttribute('data-theme', saved);
-    } else {
-      document.documentElement.setAttribute('data-theme', 'light');
     }
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+  }, [theme, mounted]);
 
   const setTheme = useCallback((t: ThemeMode) => {
     setThemeState(t);
@@ -44,12 +47,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const cycleTheme = useCallback(() => {
     setTheme(NEXT_THEME[theme]);
   }, [theme, setTheme]);
-
-  useEffect(() => {
-    if (mounted) {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
-  }, [theme, mounted]);
 
   const value = useMemo(() => ({ theme, setTheme, cycleTheme }), [theme, setTheme, cycleTheme]);
 

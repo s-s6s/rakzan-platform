@@ -14,7 +14,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${dmSans.variable} ${outfit.variable} ${ibmPlexSansArabic.variable}`}>
+    <html lang="ar" dir="rtl" className={`${dmSans.variable} ${outfit.variable} ${ibmPlexSansArabic.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `(function(){try{var t=localStorage.getItem('rakzan-theme');if(t==='dark'||t==='gold'){document.documentElement.setAttribute('data-theme',t)}}catch(e){}})()`
+        }} />
+      </head>
       <body className="min-h-screen antialiased">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
